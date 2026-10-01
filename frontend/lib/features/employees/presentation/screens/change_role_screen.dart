@@ -98,33 +98,62 @@ class _ChangeRoleScreenState extends State<ChangeRoleScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    ..._roles.map((role) {
-                      final (value, label, icon) = role;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: RadioListTile<String>(
-                          value: value,
-                          groupValue: _selectedRole,
-                          onChanged: _submitting
-                              ? null
-                              : (v) => setState(() => _selectedRole = v),
-                          title: Text(label),
-                          secondary: Icon(icon, color: AppTheme.primary),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              color: _selectedRole == value
-                                  ? AppTheme.primary
-                                  : Colors.grey.shade300,
-                              width: _selectedRole == value ? 2 : 1,
+                    // 🌟 RadioGroup — بدون null في onChanged
+                    RadioGroup<String>(
+                      groupValue: _selectedRole,
+                      onChanged: (value) {
+                        if (_submitting) return; // 🎯 check جوه
+                        setState(() => _selectedRole = value);
+                      },
+                      child: Column(
+                        children: _roles.map((role) {
+                          final (value, label, icon) = role;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: InkWell(
+                              onTap: _submitting
+                                  ? null
+                                  : () => setState(() => _selectedRole = value),
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: _selectedRole == value
+                                        ? AppTheme.primary
+                                        : Colors.grey.shade300,
+                                    width: _selectedRole == value ? 2 : 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(icon,
+                                        color: AppTheme.primary, size: 22),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Text(
+                                        label,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    Radio<String>(
+                                      value: value,
+                                      activeColor: AppTheme.primary,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    ),
 
                     const SizedBox(height: 16),
-
                     ElevatedButton(
                       onPressed: _submitting ? null : _submit,
                       child: _submitting
